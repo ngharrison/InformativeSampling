@@ -1,7 +1,7 @@
 #* packages and functions
 
 using InformativeSampling
-using .Maps, .Missions, .BeliefModels, .Samples, .ROSInterface, .Kernels, .SampleCosts
+using .Maps, .Missions, .MultiQuantityGPs, .Samples, .ROSInterface, .Kernels, .SampleCosts
 
 using InformativeSamplingUtils
 using .DataIO
@@ -2337,7 +2337,7 @@ end |> collect
 
 argmax(s->s.y, samples)
 
-bm = BeliefModel(samples, boundsn[extent];
+bm = MQGP(samples, boundsn[extent];
             means=(use=true, learned=true),
             noise=(value=0.0, learned=true))
 
@@ -2450,7 +2450,7 @@ samples = Iterators.flatmap([gt_dir]) do run
         end)
 end |> collect
 
-bm = BeliefModel(samples, boundsn[extent]; noise=(value=0.0, learned=true))
+bm = MQGP(samples, boundsn[extent]; noise=(value=0.0, learned=true))
 bm.θ.σn
 
 ls = map(eachline(run * "/belief_params.txt")) do line
@@ -2469,7 +2469,7 @@ for run in filter(contains("prior"), runs)
     N = 2
     beliefs = map(enumerate(eachline(run * "/belief_params.txt"))) do (i, line)
         params = (; eval(Meta.parse(line))..., μ = [0, 0])
-        BeliefModel([Sample(([0.0,0.0],1),0.0)], params; N)
+        MQGP([Sample(([0.0,0.0],1),0.0)], params; N)
     end
     cors = [outputCorMat(bm)[:, 1] for bm in beliefs]
     writedlm(run * "/correlations_new.txt", [cors], "\n")

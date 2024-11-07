@@ -12,7 +12,7 @@ using DocStringExtensions: TYPEDSIGNATURES, EXPORTS
 
 using InformativeSampling
 using .Maps: generateAxes
-using .BeliefModels: BeliefModel, outputCorMat
+using .MultiQuantityGPs: MQGP, outputCorMat
 using .Samples: MapsSampler
 
 export calcMetrics
@@ -80,7 +80,7 @@ function calcMetrics(mission, samples, beliefs, times, q, points)
     return (; mae, mu, mb, mxae, mxu, mxb, cors, dists, times)
 end
 
-function calcMetrics(mission, beliefModel::BeliefModel, q, points)
+function calcMetrics(mission, beliefModel::MQGP, q, points)
     μ, σ = beliefModel(tuple.(vec(points), q))
     true_vals = vec(mission.sampler[q])
     mask = vec(.! mission.occupancy)

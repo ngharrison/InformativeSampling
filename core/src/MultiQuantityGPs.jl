@@ -6,7 +6,7 @@ built on Gaussian Processes.
 Main public types and functions:
 $(EXPORTS)
 """
-module BeliefModels
+module MultiQuantityGPs
 
 using LinearAlgebra: diag, PosDefException, norm, Diagonal, I
 using AbstractGPs: GP, posterior, mean_and_var, mean_and_cov,
@@ -23,7 +23,7 @@ using ..Kernels: multiMean, singleKernel, multiKernel, fullyConnectedCovNum,
                  initHyperparams, mtoKernel
 using ..Maps: Bounds
 
-export BeliefModel, outputCovMat, outputCorMat, meanDerivAndVar, fullCov
+export MQGP, outputCovMat, outputCorMat, meanDerivAndVar, fullCov
 
 """
 $(TYPEDEF)
@@ -36,7 +36,7 @@ single output.
 Its interface:
 `X -> μ, σ` (SampleInputs -> means, standard deviations)
 """
-struct BeliefModel{T}
+struct MQGP{T}
     "posterior Gaussian Process used to do inference"
     gp
     "number of outputs of the GP"
@@ -47,17 +47,17 @@ struct BeliefModel{T}
     θ
 end
 
-function Base.show(io::IO, bm::BeliefModel)
-    print(io, "BeliefModel")
+function Base.show(io::IO, bm::MQGP)
+    print(io, "MQGP")
 end
-function Base.show(io::IO, ::MIME"text/plain", bm::BeliefModel)
-    print(io, "BeliefModel:\n\tθ = $(bm.θ)")
+function Base.show(io::IO, ::MIME"text/plain", bm::MQGP)
+    print(io, "MQGP:\n\tθ = $(bm.θ)")
 end
 
 """
 $(TYPEDSIGNATURES)
 
-Creates and returns a BeliefModel with hyperparameters trained and conditioned
+Creates and returns a MQGP with hyperparameters trained and conditioned
 on the samples given. Lower and upper bounds are used to initialize one of the
 hyperparameters.
 
@@ -66,11 +66,11 @@ value for all samples or a vector of values, one for each sample.
 
 # Examples
 ```julia
-# create a BeliefModel
-beliefModel = BeliefModel([M.prior_samples; samples], bounds)
+# create a MQGP
+beliefModel = MQGP([M.prior_samples; samples], bounds)
 ```
 """
-function BeliefModel(samples, bounds::Bounds; N=maximum(s->s.x[2], samples),
+function MQGP(samples, bounds::Bounds; N=maximum(s->s.x[2], samples),
                      kernel=multiKernel, means=(use=true, learned=true),
                      noise=(value=0.0, learned=false),
                      use_cond_pdf=false)
@@ -94,18 +94,18 @@ function BeliefModel(samples, bounds::Bounds; N=maximum(s->s.x[2], samples),
     fx = buildPriorGP(X, Y_errs, kernel, θ)
     f_post = posterior(fx, Y_vals) # gp conditioned on training samples
 
-    return BeliefModel(f_post, N, kernel, θ)
+    return MQGP(f_post, N, kernel, θ)
 end
 
 # Produce a belief model with pre-chosen hyperparams
-function BeliefModel(samples, θ; N=maximum(s->s.x[2], samples),
+function MQGP(samples, θ; N=maximum(s->s.x[2], samples),
                      kernel=multiKernel)
     X, Y_vals, Y_errs = extractSampleVals(samples)
 
     fx = buildPriorGP(X, Y_errs, kernel, θ)
     f_post = posterior(fx, Y_vals) # gp conditioned on training samples
 
-    return BeliefModel(f_post, N, kernel, θ)
+    return MQGP(f_post, N, kernel, θ)
 end
 
 function extractSampleVals(samples)
@@ -154,12 +154,12 @@ X = [([.1, .2], 1),
 μ, σ = beliefModel(X) # result: [μ1, μ2], [σ1, σ2]
 ```
 """
-function (beliefModel::BeliefModel)(x::SampleInput; kwargs...)
-    return only.(beliefModel([x]); kwargs...)
+function (bm::MQGP)(x::SampleInput; kwargs...)
+    return only.(bm([x]); kwargs...)
 end
 
-function (beliefModel::BeliefModel)(X::AbstractArray{SampleInput})
-    μ, σ² = reshape.(mean_and_var(beliefModel.gp, vec(X)), Ref(size(X)))
+function (bm::MQGP)(X::AbstractArray{SampleInput})
+    μ, σ² = reshape.(mean_and_var(bm.gp, vec(X)), Ref(size(X)))
     return μ, .√clamp!(σ², 0.0, Inf) # avoid negative variances
 end
 
@@ -168,8 +168,8 @@ $(TYPEDSIGNATURES)
 
 Returns the full covariance matrix for the belief model.
 """
-function fullCov(beliefModel::BeliefModel, X::AbstractArray{SampleInput})
-    return cov(beliefModel.gp, X) + I*√eps() # avoid negative eigenvalues
+function fullCov(bm::MQGP, X::AbstractArray{SampleInput})
+    return cov(bm.gp, X) + I*√eps() # avoid negative eigenvalues
 end
 
 """
@@ -255,16 +255,16 @@ $(TYPEDSIGNATURES)
 
 Returns the normed gradient of the mean of the belief model and its variance.
 """
-function meanDerivAndVar(beliefModel::BeliefModel, x::SampleInput)
-    return only.(meanDerivAndVar(beliefModel, [x]))
+function meanDerivAndVar(bm::MQGP, x::SampleInput)
+    return only.(meanDerivAndVar(bm, [x]))
 end
 
-function meanDerivAndVar(beliefModel::BeliefModel, X::AbstractArray{SampleInput})
+function meanDerivAndVar(bm::MQGP, X::AbstractArray{SampleInput})
     Xv = vec(X)
     dims = size(X)
-    f = beliefModel.gp
+    f = bm.gp
     C_xcond_x = cov(f.prior, f.data.x, Xv)
-    m_deriv_norm = reshape(meanDerivNorm(Xv, f.data.x, C_xcond_x, beliefModel.θ.ℓ, f.data.α), dims)
+    m_deriv_norm = reshape(meanDerivNorm(Xv, f.data.x, C_xcond_x, bm.θ.ℓ, f.data.α), dims)
     C_post_diag = reshape(var(f.prior, Xv) - diag_Xt_invA_X(f.data.C, C_xcond_x), dims)
     return m_deriv_norm, .√clamp!(C_post_diag, 0.0, Inf)
 end
@@ -283,24 +283,24 @@ $(TYPEDSIGNATURES)
 
 Gives the covariance matrix between all outputs from the hyperparameters.
 """
-function outputCovMat(bm::BeliefModel{typeof(multiKernel)})
+function outputCovMat(bm::MQGP{typeof(multiKernel)})
     σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
     return fullyConnectedCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
 end
 
-function outputCovMat(bm::BeliefModel{typeof(mtoKernel)})
+function outputCovMat(bm::MQGP{typeof(mtoKernel)})
     σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
     return manyToOneCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
 end
 
 """
 ```julia
-outputCorMat(beliefModel::BeliefModel)
+outputCorMat(beliefModel::MQGP)
 ```
 
 Gives the correlation matrix between all outputs from the hyperparameters.
 """
-function outputCorMat(bm::BeliefModel)
+function outputCorMat(bm::MQGP)
     cov_mat = outputCovMat(bm)
     vars = diag(cov_mat)
     R = @. cov_mat / √(vars * vars') # broadcast shorthand

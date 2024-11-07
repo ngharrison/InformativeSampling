@@ -3,7 +3,7 @@ using LinearAlgebra: logdet
 
 using ..Maps: generateAxes
 using ..Samples: Sample
-using ..BeliefModels: BeliefModel
+using ..MultiQuantityGPs: MQGP
 
 @doc raw"""
 Similar to [InfoGain](@ref) but uses only variances rather than the full
@@ -43,7 +43,7 @@ function values(sc::VarTrace, loc)
     # add new sample with filler y-value since mean isn't used
     samples_c = [sc.samples; Sample((loc, 1), 0.0)]
 
-    belief_model_c = BeliefModel(samples_c, sc.beliefModel.θ, sc.beliefModel.N; sc.beliefModel.kernel)
+    belief_model_c = MQGP(samples_c, sc.beliefModel.θ, sc.beliefModel.N; sc.beliefModel.kernel)
 
     _, σ = belief_model_c(tuple.(sc.test_points, 1)) # get all variances
 

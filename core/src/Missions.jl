@@ -2,7 +2,7 @@
 This module contains functions for initializing mission data and the function
 for running the entire search mission. The entry-point to the actual informative
 sampling. This contains the main loop and most of the usage of Samples and
-BeliefModels.
+belief models.
 
 Main public types and functions:
 $(EXPORTS)
@@ -15,7 +15,7 @@ using DocStringExtensions: TYPEDSIGNATURES, TYPEDFIELDS, EXPORTS
 
 using ..Maps: randomPoint, getBounds
 using ..Samples: Sample, selectSampleLocation, takeSamples
-using ..BeliefModels: BeliefModel, outputCorMat
+using ..MultiQuantityGPs: MQGP, outputCorMat
 using ..Kernels: multiKernel
 using ..SampleCosts: values, DistScaledEIGF
 
@@ -89,14 +89,14 @@ Outputs:
 
 # Examples
 ```julia
-using Missions: simMission
+using Missions: synMission
 
-mission = simMission(num_samples=10) # create the specific mission
+mission = synMission(num_samples=10) # create the specific mission
 samples, beliefs = mission(visuals=true, sleep_time=0.5) # run the mission
 ```
 """
 function (M::Mission)(func=Returns(nothing);
-                      samples=Sample[], beliefs=BeliefModel[],
+                      samples=Sample[], beliefs=MQGP[],
                       other_samples=Sample[], times=Float64[], cors=Vector{Float64}[],
                       seed_val=0, sleep_time=0)
 
@@ -131,7 +131,7 @@ function (M::Mission)(func=Returns(nothing);
 
         t = @elapsed begin # computation time
             # new belief
-            beliefModel = BeliefModel([prior_samples; samples], bounds;
+            beliefModel = MQGP([prior_samples; samples], bounds;
                                       N, M.kernel, M.means, M.noise, M.use_cond_pdf)
             push!(beliefs, beliefModel)
 
@@ -255,7 +255,7 @@ function replay(func, M::Mission, full_samples; sleep_time=0.0)
     num_q = length(quantities) # number of quantities being sampled
     N = maximum(s->s.x[2], M.prior_samples, init=num_q) # defaults to num_q
     beliefs = map(1:length(full_samples)) do i
-        BeliefModel([M.prior_samples; full_samples[1:i]], getBounds(M.occupancy);
+        MQGP([M.prior_samples; full_samples[1:i]], getBounds(M.occupancy);
                     N, M.kernel, M.means, M.noise, M.use_cond_pdf)
     end
     replay(func, M, full_samples, beliefs; sleep_time)

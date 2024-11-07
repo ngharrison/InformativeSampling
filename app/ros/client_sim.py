@@ -41,7 +41,7 @@ weights = [1, 1e2, 1, 0]
 quantities = [1]
 
 def generateBeliefModelClient():
-    print("Requesting BeliefModel")
+    print("Requesting Belief Model")
     rospy.wait_for_service('generate_belief_model')
     try:
         generateBeliefModel = rospy.ServiceProxy('generate_belief_model', GenerateBeliefModel)

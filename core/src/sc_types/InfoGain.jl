@@ -3,7 +3,7 @@ using LinearAlgebra: logdet
 
 using ..Maps: generateAxes
 using ..Samples: Sample
-using ..BeliefModels: BeliefModel, fullCov
+using ..MultiQuantityGPs: MQGP, fullCov
 
 @doc raw"""
 Derived from the idea of information gain across the region. Returns the entropy
@@ -46,7 +46,7 @@ function values(sc::InfoGain, loc)
     # add new sample with filler y-value since mean isn't used
     samples_c = [sc.samples; Sample((loc, 1), 0.0)]
 
-    belief_model_c = BeliefModel(samples_c, sc.beliefModel.θ, sc.beliefModel.N; sc.beliefModel.kernel)
+    belief_model_c = MQGP(samples_c, sc.beliefModel.θ, sc.beliefModel.N; sc.beliefModel.kernel)
 
     Σ = fullCov(belief_model_c, tuple.(vec(sc.test_points), 1)) # get full covariance matrix
 

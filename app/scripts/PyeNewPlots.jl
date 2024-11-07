@@ -1,6 +1,6 @@
 
 using InformativeSampling
-using .Maps, .Missions, .BeliefModels, .Samples, .Kernels
+using .Maps, .Missions, .MultiQuantityGPs, .Samples, .Kernels
 
 using InformativeSamplingUtils
 using .DataIO, .Visualization
@@ -24,7 +24,7 @@ file_name = output_dir * "pye_farm_trial_named/" * name * output_ext
 data = load(file_name)
 mission = data["mission"]
 samples = data["samples"]
-bm = BeliefModel([mission.prior_samples; samples], bounds)
+bm = MQGP([mission.prior_samples; samples], bounds)
 
 occupancy = mission.occupancy
 bounds = getBounds(occupancy)

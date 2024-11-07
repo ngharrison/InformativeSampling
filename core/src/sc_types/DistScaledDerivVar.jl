@@ -1,5 +1,5 @@
 
-using ..BeliefModels: meanDerivAndVar
+using ..MultiQuantityGPs: meanDerivAndVar
 
 @doc raw"""
 Uses the norm of the derivative of the belief model mean and the belief model

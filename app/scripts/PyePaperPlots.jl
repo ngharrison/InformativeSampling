@@ -1,6 +1,6 @@
 
 using InformativeSampling
-using .Maps, .Missions, .BeliefModels, .Samples, .ROSInterface, .Kernels
+using .Maps, .Missions, .MultiQuantityGPs, .Samples, .ROSInterface, .Kernels
 
 using InformativeSamplingUtils
 using .DataIO, .Visualization
@@ -58,7 +58,7 @@ plts = map([1,3,4,5]) do i
     mission = data["mission"]
     samples = data["samples"]
     bounds = getBounds(mission.occupancy)
-    # bm = BeliefModel([mission.prior_samples; samples], bounds)
+    # bm = MQGP([mission.prior_samples; samples], bounds)
     bm = data["beliefs"][end]
 
     axs, points = generateAxes(mission.occupancy)
@@ -96,7 +96,7 @@ plot(plts[1], plts[3], plts[2], plts[4],
 
 savefig(output_dir * "iros_2024/full_results.png")
 
-bm = BeliefModel([mission.prior_samples; samples], bounds)
+bm = MQGP([mission.prior_samples; samples], bounds)
 
 vis(bm, samples, mission.occupancy)
 outputCorMat(bm)
@@ -108,7 +108,7 @@ data = load(output_dir * "pye_farm_trial_named/" * name * output_ext)
 mission = data["mission"]
 samples = data["samples"]
 bounds = getBounds(mission.occupancy)
-# bm = BeliefModel([mission.prior_samples; samples], bounds)
+# bm = MQGP([mission.prior_samples; samples], bounds)
 bm = data["beliefs"][end]
 
 axs, points = generateAxes(mission.occupancy)

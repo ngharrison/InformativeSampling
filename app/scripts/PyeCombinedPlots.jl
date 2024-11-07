@@ -1,7 +1,7 @@
 #* starter stuff
 
 using InformativeSampling
-using .Maps, .Missions, .BeliefModels, .Samples
+using .Maps, .Missions, .MultiQuantityGPs, .Samples
 
 using InformativeSamplingUtils
 using .DataIO, .Visualization
@@ -27,7 +27,7 @@ for i in 4:6
     bounds = getBounds(mission.occupancy)
 
     axs, points = generateAxes(mission.occupancy)
-    bm = BeliefModel([mission.prior_samples; samples], bounds)
+    bm = MQGP([mission.prior_samples; samples], bounds)
     pred, err = bm(tuple.(vec(points), 1))
     global pred_range = (min(minimum(pred), pred_range[1]), max(maximum(pred), pred_range[2]))
     global err_range = (min(minimum(err), err_range[1]), max(maximum(err), err_range[2]))
@@ -50,7 +50,7 @@ file_name = output_dir * "pye_farm_trial_named/" * name * output_ext
 data = load(file_name)
 mission = data["mission"]
 samples = data["samples"]
-bm = BeliefModel([mission.prior_samples; samples], bounds)
+bm = MQGP([mission.prior_samples; samples], bounds)
 
 occupancy = mission.occupancy
 bounds = getBounds(occupancy)
@@ -112,7 +112,7 @@ data = load(output_dir * "pye_farm_trial_named/" * name * output_ext)
 mission = data["mission"]
 samples = data["samples"]
 
-bm = BeliefModel([mission.prior_samples; samples], bounds)
+bm = MQGP([mission.prior_samples; samples], bounds)
 axs_4, points = generateAxes(mission.occupancy)
 pred_map_4, err_map_4 = bm(tuple.(points, 1))
 xp = first.(getfield.(samples, :x))
@@ -155,7 +155,7 @@ data = load(output_dir * "pye_farm_trial_named/" * name * output_ext)
 mission = data["mission"]
 samples = data["samples"]
 
-bm = BeliefModel([mission.prior_samples; samples], bounds)
+bm = MQGP([mission.prior_samples; samples], bounds)
 axs_5, points = generateAxes(mission.occupancy)
 pred_map_5, err_map_5 = bm(tuple.(points, 1))
 xp = first.(getfield.(samples, :x))

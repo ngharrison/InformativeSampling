@@ -3,7 +3,7 @@ using InformativeSampling
 
 using .Maps: res, generateAxes
 using .Missions: Mission
-using .BeliefModels: BeliefModel, outputCovMat
+using .MultiQuantityGPs: MQGP, outputCovMat
 using .Samples: Sample
 
 using InformativeSamplingUtils

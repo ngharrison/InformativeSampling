@@ -5,12 +5,12 @@ include("Maps.jl")
 include("Paths.jl")
 include("Samples.jl")
 include("Kernels.jl")
-include("BeliefModels.jl")
+include("MultiQuantityGPs.jl")
 include("SampleCosts.jl")
 include("ROSInterface.jl")
 include("Missions.jl")
 
-export Maps, Paths, SampleCosts, Samples, BeliefModels, Kernels,
+export Maps, Paths, SampleCosts, Samples, MultiQuantityGPs, Kernels,
        ROSInterface, Missions
 
 end

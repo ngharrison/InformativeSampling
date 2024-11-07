@@ -17,7 +17,7 @@ using .informative_sampling.msg: BeliefModelParameters
 using .std_msgs.msg: Float64MultiArray, MultiArrayLayout, MultiArrayDimension
 
 using InformativeSampling
-using .Samples, .BeliefModels, .Maps, .SampleCosts
+using .Samples, .MultiQuantityGPs, .Maps, .SampleCosts
 
 using Random: seed!
 
@@ -46,7 +46,7 @@ function handleGenerateBeliefModel(req)
     # default values will be (0.0, false)
     noise = (; req.noise.value, req.noise.learned)
 
-    beliefModel = BeliefModel(samples, bounds; noise)
+    beliefModel = MQGP(samples, bounds; noise)
 
     params = BeliefModelParameters(beliefModel.θ...)
     return GenerateBeliefModelResponse(params)
@@ -64,7 +64,7 @@ function handleGenerateBeliefMaps(req)
     # default values will be (0.0, false)
     noise = (; req.noise.value, req.noise.learned)
 
-    beliefModel = BeliefModel(samples, bounds; noise)
+    beliefModel = MQGP(samples, bounds; noise)
 
     dims = Tuple(req.dims)
     quantity = req.quantity_index
@@ -95,7 +95,7 @@ function handleGenerateBeliefMapsFromModel(req)
         σn = req.params.noise
     )
 
-    beliefModel = BeliefModel(samples, params)
+    beliefModel = MQGP(samples, params)
 
     bounds = (; req.bounds.lower, req.bounds.upper)
     dims = Tuple(req.dims)
@@ -127,7 +127,7 @@ function handleNextSampleLocation(req)
     # default values will be (0.0, false)
     noise = (; req.noise.value, req.noise.learned)
 
-    beliefModel = BeliefModel(samples, bounds; noise)
+    beliefModel = MQGP(samples, bounds; noise)
 
     dims = Tuple(d.size for d in req.occupancy.layout.dim)
     occupancy = Map(reshape(Bool.(req.occupancy.data), dims), bounds)
@@ -152,7 +152,7 @@ function handleBeliefMapsAndNextSampleLocation(req)
     # default values will be (0.0, false)
     noise = (; req.noise.value, req.noise.learned)
 
-    beliefModel = BeliefModel(samples, bounds; noise)
+    beliefModel = MQGP(samples, bounds; noise)
 
     dims = Tuple(d.size for d in req.occupancy.layout.dim)
     quantity = req.quantity_index

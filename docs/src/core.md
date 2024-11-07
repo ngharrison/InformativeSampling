@@ -14,10 +14,10 @@ Modules = [Maps]
 Modules = [Missions]
 ```
 
-## BeliefModels.jl
+## MultiQuantityGPs.jl
 
 ```@autodocs
-Modules = [BeliefModels]
+Modules = [MultiQuantityGPs]
 ```
 
 ## Samples.jl

@@ -6,7 +6,7 @@ from julia import Pkg, Main
 
 Pkg.activate('app')
 
-from julia.InformativeSampling import Samples, BeliefModels, Maps, SampleCosts, Missions
+from julia.InformativeSampling import Samples, MultiQuantityGPs, Maps, SampleCosts, Missions
 
 # from julia.InformativeSamplingUtils import DataIO, Visualization
 
@@ -26,7 +26,7 @@ bounds = Main.eval('(lower=[0.0, 0.0], upper=[1.0, 1.0])')
 
 noise = Main.eval('(value=0.0, learned=false)')
 
-beliefModel = BeliefModels.BeliefModel(samples, bounds, noise=noise)
+beliefModel = MultiQuantityGPs.MQGP(samples, bounds, noise=noise)
 
 print(beliefModel.θ)
 

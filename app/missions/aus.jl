@@ -247,7 +247,7 @@ for options in runs
 # set the logging level: Info or Debug
 global_logger(ConsoleLogger(stderr, Info))
 
-using .BeliefModels: outputCorMat
+using .MultiQuantityGPs: outputCorMat
 
 using .Metrics: calcMetrics
 using .DataIO: save

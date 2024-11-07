@@ -1,6 +1,6 @@
 """
 This module contains everything to do with sampling values in the environment.
-Its alias types `Location` and `SampleInput` are fundamental pieces for BeliefModels
+Its alias types `Location` and `SampleInput` are fundamental pieces for MultiQuantityGPs
 as well.
 
 Main public types and functions:

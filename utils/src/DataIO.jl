@@ -15,7 +15,7 @@ using DocStringExtensions: TYPEDSIGNATURES, EXPORTS
 
 using InformativeSampling
 using .Maps: generateAxes, Map, getBounds
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 
 using ..Visualization: visualize
 
@@ -221,11 +221,11 @@ $(TYPEDSIGNATURES)
 Generates belief and uncertainty Maps from a belief model for chosen bounds and
 dimensions. Can also pass in another Map in place of bounds and dims.
 """
-function produceMaps(beliefModel::BeliefModel, map::Map; quantity=1)
+function produceMaps(beliefModel::MQGP, map::Map; quantity=1)
     return produceMaps(beliefModel, getBounds(map), size(map); quantity)
 end
 
-function produceMaps(beliefModel::BeliefModel, bounds, dims; quantity=1)
+function produceMaps(beliefModel::MQGP, bounds, dims; quantity=1)
     axs, points = generateAxes(bounds, dims)
     μ, σ = beliefModel(tuple.(points, quantity))
     pred_map, err_map = (Map(v, bounds) for v in (μ, σ))

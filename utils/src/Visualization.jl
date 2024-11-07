@@ -12,7 +12,7 @@ using DocStringExtensions: TYPEDSIGNATURES, TYPEDEF, EXPORTS
 
 using InformativeSampling
 using .Maps: Map, res, generateAxes, getBounds
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 using .SampleCosts: SampleCost
 
 export visualize, vis
@@ -41,7 +41,7 @@ resolution when plotting continuous-valued functions and defaults to $(default_r
 
 If no ground truth is available, it is not plotted.
 """
-function visualize(md, samples, beliefModel::BeliefModel, sampleCost, new_loc; quantity=1)
+function visualize(md, samples, beliefModel::MQGP, sampleCost, new_loc; quantity=1)
     a = visualize(beliefModel, samples, md.occupancy, new_loc; quantity)
     b = plot(legend=false, grid=false, foreground_color_subplot=:white) # blank plot
     # TODO this will need to be updated to test for actual types
@@ -57,7 +57,7 @@ end
 """
 $(TYPEDSIGNATURES)
 """
-function visualize(md, samples, beliefModel::BeliefModel, new_loc; quantity=1)
+function visualize(md, samples, beliefModel::MQGP, new_loc; quantity=1)
     sampleCost = md.sampleCostType(
         md.occupancy, samples, beliefModel, eachindex(md.sampler), md.weights
     )
@@ -136,7 +136,7 @@ $(TYPEDSIGNATURES)
 Method to show belief model values of mean and standard deviation and the sample
 locations that they were generated from. Shows two plots side-by-side.
 """
-function visualize(beliefModel::BeliefModel, samples, occupancy, new_loc=nothing; quantity=1)
+function visualize(beliefModel::MQGP, samples, occupancy, new_loc=nothing; quantity=1)
     axes, points = getAxes(occupancy)
     pred_map, err_map = beliefModel(tuple.(points, quantity))
 

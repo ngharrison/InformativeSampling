@@ -8,7 +8,7 @@ using .Maps: Map, generateAxes, getBounds
 using .SampleCosts: EIGF, DistScaledEIGF
 using .Samples: Sample, MapsSampler
 using .Missions: Mission
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 
 # this requires a working rospy installation
 using .ROSInterface: ROSSampler
@@ -63,10 +63,10 @@ function pyeFarmMission(; num_samples=4,
     #     height_samples = filter(s->s.x[2]==1, data["samples"])
     #     ndvi_samples = filter(s->s.x[2]==2, data["samples"])
     #
-    #     bm = BeliefModel(height_samples, bounds)
+    #     bm = MQGP(height_samples, bounds)
     #     h, _ = produceMaps(bm, occupancy)
     #     # vis(h)
-    #     bm = BeliefModel(ndvi_samples, bounds)
+    #     bm = MQGP(ndvi_samples, bounds)
     #     n, _ = produceMaps(bm, occupancy; quantity=2)
     #     # vis(n)
     #     h, n
@@ -165,7 +165,7 @@ end
 rospy.sleep(.1)
 
 M = mission
-other_bm = BeliefModel(filter(s->s.x[2]==2, samples), getBounds(M.occupancy);
+other_bm = MQGP(filter(s->s.x[2]==2, samples), getBounds(M.occupancy);
                        M.noise, M.kernel)
 bm_vals = map(enumerate((beliefs[end], other_bm))) do (i, bm)
     bm(tuple.(points, i))

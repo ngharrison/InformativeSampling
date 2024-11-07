@@ -1,6 +1,6 @@
 
 using InformativeSampling
-using .Maps, .Missions, .BeliefModels, .Samples, .ROSInterface
+using .Maps, .Missions, .MultiQuantityGPs, .Samples, .ROSInterface
 
 using InformativeSamplingUtils
 using .DataIO

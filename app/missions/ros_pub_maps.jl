@@ -9,7 +9,7 @@ using InformativeSampling
 using .Maps: Map, generateAxes, getBounds
 using .SampleCosts: EIGF
 using .Missions: Mission
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 
 # this requires a working rospy installation
 using .ROSInterface: ROSSampler
@@ -86,7 +86,7 @@ end
 
 ## run search alg
 @time samples, beliefs = mission() do M, samples, beliefModel, _, _
-    other_bm = BeliefModel(filter(s->s.x[2]!=1, samples),
+    other_bm = MQGP(filter(s->s.x[2]!=1, samples),
                            getBounds(M.occupancy); M.noise, M.kernel)
     bm_vals = map(enumerate((beliefModel, other_bm))) do (i, bm)
         bm(tuple.(vec(points), i))

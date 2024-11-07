@@ -12,7 +12,7 @@ using .SampleCosts: MIPT, EIGF, DistScaledEIGF, OnlyVar,
                     LogLikelihoodFull, DistLogEIGF
 using .Missions: Mission
 using .Kernels: multiKernel, mtoKernel
-using .BeliefModels: outputCorMat
+using .MultiQuantityGPs: outputCorMat
 
 using InformativeSamplingUtils
 using .DataIO: GaussGroundTruth, Peak

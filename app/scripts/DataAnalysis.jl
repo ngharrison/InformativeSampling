@@ -4,7 +4,7 @@
 using InformativeSampling
 
 using .Missions: Mission
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 using .Samples: Sample
 
 using InformativeSamplingUtils
@@ -467,7 +467,7 @@ t^2*(err_stds[p,a]^2 + err_stds[p,b]^2)/(err_means[p,a] - err_means[p,b])^2
 mission_peaks = [3,3,4,4,5,5]
 cors = Array{Any, 1}(undef, length(mission_peaks))
 for (i, num_peaks) in enumerate(mission_peaks)
-    mission, c = simMission(; seed_val=i, num_peaks)
+    mission, c = synMission(; seed_val=i, num_peaks)
     cors[i] = c
 end
 s = [abs.(c) for c in cors]

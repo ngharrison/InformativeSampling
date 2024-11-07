@@ -53,7 +53,7 @@ end
 
 using DelimitedFiles
 
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 
 dir = "pye_farm_trial2/"
 file_names = filter(n->!any(contains.(n, ("strange", "grid"))),
@@ -81,7 +81,7 @@ for file_name in file_names
 
     ndvi_samples = filter(s->s.x[2]==2, samples)
     if !isempty(ndvi_samples)
-        bm = BeliefModel(ndvi_samples, mission.occupancy.bounds)
+        bm = MQGP(ndvi_samples, mission.occupancy.bounds)
 
         belief_maps = produceMaps(bm, mission.occupancy; quantity=2)
         m, s = mapToImg.(belief_maps)
@@ -124,14 +124,14 @@ for s in ndvi_samples
 end
 writedlm(base_name * "/avg_ndvi.csv", mapToImg(m_grid), ',')
 
-bm = BeliefModel(height_samples, mission.occupancy.bounds; mission.noise)
+bm = MQGP(height_samples, mission.occupancy.bounds; mission.noise)
 belief_maps = produceMaps(bm, mission.occupancy)
 m, s = mapToImg.(belief_maps)
 
 writedlm(base_name * "/avg_height_belief.csv", m, ',')
 writedlm(base_name * "/avg_height_uncertainty.csv", s, ',')
 
-bm = BeliefModel(ndvi_samples, mission.occupancy.bounds; mission.noise)
+bm = MQGP(ndvi_samples, mission.occupancy.bounds; mission.noise)
 belief_maps = produceMaps(bm, mission.occupancy; quantity=2)
 m, s = mapToImg.(belief_maps)
 

@@ -3,7 +3,7 @@ using InformativeSampling
 
 using .Maps: generateAxes
 using .Missions: Mission
-using .BeliefModels: BeliefModel
+using .MultiQuantityGPs: MQGP
 using .Samples: Sample
 
 using InformativeSamplingUtils

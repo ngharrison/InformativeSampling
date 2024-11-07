@@ -12,7 +12,7 @@ using DocStringExtensions: TYPEDSIGNATURES, EXPORTS
 
 using InformativeSampling
 using .Maps: generateAxes
-using .MultiQuantityGPs: MQGP, outputCorMat
+using .MultiQuantityGPs: MQGP, quantityCorMat
 using .Samples: MapsSampler
 
 export calcMetrics
@@ -97,7 +97,7 @@ function calcMetrics(mission, beliefModel::MQGP, q, points)
     # Max Belief?
     mxb = maximum(μ[vec(mask)])
     # Correlations
-    cors = outputCorMat(beliefModel)[:,q]
+    cors = quantityCorMat(beliefModel)[:,q]
     return (; mae, mu, mb, mxae, mxu, mxb, cors)
 end
 

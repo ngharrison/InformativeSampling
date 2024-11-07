@@ -43,4 +43,4 @@ x = [.2, .75]
 val = m(x) # call method to perform its function and get result
 ```
 
-The type's methods are meant to be the primary purpose of that object. e.g. a `BeliefModel` returns the belief, a `SampleCost` returns the sample cost, etc. If an object's data are used in any secondary way, it will be its own separate function with its own name, and the object will be passed in directly. e.g. `outputCorMat(beliefModel::BeliefModel)`.
+The type's methods are meant to be the primary purpose of that object. e.g. a `BeliefModel` returns the belief, a `SampleCost` returns the sample cost, etc. If an object's data are used in any secondary way, it will be its own separate function with its own name, and the object will be passed in directly. e.g. `quantityCorMat(beliefModel::BeliefModel)`.

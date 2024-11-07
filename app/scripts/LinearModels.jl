@@ -3,7 +3,7 @@ using InformativeSampling
 
 using .Maps: res, generateAxes
 using .Missions: Mission
-using .MultiQuantityGPs: MQGP, outputCovMat
+using .MultiQuantityGPs: MQGP, quantityCovMat
 using .Samples: Sample
 
 using InformativeSamplingUtils
@@ -67,7 +67,7 @@ vals = [getfield.(filter(s->s.x[2]==i, all_samples), :y)
         for i in 1:num_quant]
 extrema.(vals)
 beliefModel = beliefs[end]
-A = outputCovMat(beliefModel)
+A = quantityCovMat(beliefModel)
 means = beliefModel.θ.μ
 
 #* linear model --- measurements

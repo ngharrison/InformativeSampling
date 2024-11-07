@@ -15,7 +15,7 @@ using DocStringExtensions: TYPEDSIGNATURES, TYPEDFIELDS, EXPORTS
 
 using ..Maps: randomPoint, getBounds
 using ..Samples: Sample, selectSampleLocation, takeSamples
-using ..MultiQuantityGPs: MQGP, outputCorMat
+using ..MultiQuantityGPs: MQGP, quantityCorMat
 using ..Kernels: multiKernel
 using ..SampleCosts: values, DistScaledEIGF
 
@@ -136,7 +136,7 @@ function (M::Mission)(func=Returns(nothing);
             push!(beliefs, beliefModel)
 
             # calculate correlations to first
-            c = outputCorMat(beliefModel)[:,1]
+            c = quantityCorMat(beliefModel)[:,1]
             push!(cors, c)
 
             # hypothesis dropout chosen by coefficient of determination
@@ -238,7 +238,7 @@ function replay(func, M::Mission, full_samples, beliefs; sleep_time=0.0)
 
         new_loc = i < M.num_samples ? full_samples[i+1].x[1] : nothing
         func(M, samples, beliefModel, sampleCost, new_loc)
-        @debug "output correlation matrix:" outputCorMat(beliefModel)
+        @debug "output correlation matrix:" quantityCorMat(beliefModel)
         sleep(sleep_time)
     end
 

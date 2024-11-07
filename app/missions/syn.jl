@@ -12,7 +12,7 @@ using .SampleCosts: MIPT, EIGF, DistScaledEIGF, OnlyVar,
                     LogLikelihoodFull, DistLogEIGF
 using .Missions: Mission
 using .Kernels: multiKernel, mtoKernel
-using .MultiQuantityGPs: outputCorMat
+using .MultiQuantityGPs: quantityCorMat
 
 using InformativeSamplingUtils
 using .DataIO: GaussGroundTruth, Peak
@@ -155,7 +155,7 @@ end
 # @time samples, beliefs, cors, times = mission(vis; sleep_time=0.0);
 #
 # for bm in beliefs
-#     println(outputCorMat(bm)[1,:])
+#     println(quantityCorMat(bm)[1,:])
 # end
 # println(beliefs[end].θ.σn)
 # println(beliefs[end].θ.μ)
@@ -332,7 +332,7 @@ metrics = Array{Any, 2}(undef, (length(mission_peaks), num_runs))
             println()
             ## run search alg
             @time samples, beliefs, cors, times = mission(seed_val=j, sleep_time=0.0);
-            @debug "output correlation matrix:" outputCorMat(beliefs[end])
+            @debug "output correlation matrix:" quantityCorMat(beliefs[end])
             ## calculate errors
             missions[i,j] = (; mission, samples, beliefs, times)
             metrics[i,j] = calcMetrics(mission, samples, beliefs, times, 1)

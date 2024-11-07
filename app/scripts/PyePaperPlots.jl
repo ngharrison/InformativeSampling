@@ -99,7 +99,7 @@ savefig(output_dir * "iros_2024/full_results.png")
 bm = MQGP([mission.prior_samples; samples], bounds)
 
 vis(bm, samples, mission.occupancy)
-outputCorMat(bm)
+quantityCorMat(bm)
 
 #* static sampling
 

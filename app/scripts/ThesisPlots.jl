@@ -973,7 +973,7 @@ missions = data["missions"]
 plts = map(missions) do mission
     beliefs = mission.beliefs
     cors = map(beliefs) do bm
-        outputCorMat(bm)[2:end, 1]
+        quantityCorMat(bm)[2:end, 1]
     end
     plot(stack(cors, dims=1), ylim=(-1, 1))
 end
@@ -2471,7 +2471,7 @@ for run in filter(contains("prior"), runs)
         params = (; eval(Meta.parse(line))..., μ = [0, 0])
         MQGP([Sample(([0.0,0.0],1),0.0)], params; N)
     end
-    cors = [outputCorMat(bm)[:, 1] for bm in beliefs]
+    cors = [quantityCorMat(bm)[:, 1] for bm in beliefs]
     writedlm(run * "/correlations_new.txt", [cors], "\n")
 end
 

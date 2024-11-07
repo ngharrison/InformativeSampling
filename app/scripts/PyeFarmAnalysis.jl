@@ -118,13 +118,13 @@ vis(elevMap; points=points_sp)
 
 #*
 cors = map(beliefs) do b
-    outputCorMat(b)
+    quantityCorMat(b)
 end
 
 using LinearAlgebra
 
 i = 10
-outputCorMat(beliefs[i])
+quantityCorMat(beliefs[i])
 for i in 1:30
     vis(mission, samples[1:i], beliefs[i], nothing)
     sleep(1.5)
@@ -168,7 +168,7 @@ vis(beliefs[end], [], mission.occupancy)
 
 beliefModel = MQGP([prior_samples; samples], bounds)
 
-outputCorMat(beliefModel)
+quantityCorMat(beliefModel)
 
 #*
 
@@ -309,7 +309,7 @@ data = load(file_name)
 samples = data["samples"]
 ss = vec(Sample.(tuple.(points, 2), elevMap))
 bm = MQGP([ss; samples], bounds)
-outputCorMat(bm)
+quantityCorMat(bm)
 vis(bm, [], Map(zeros(Bool,size(elev_img)), bounds); quantity=1)
 
 # still not getting consistent or expected results
@@ -433,7 +433,7 @@ mission = data["mission"]
 samples = data["samples"]
 cors15 = map(1:mission.num_samples) do i
     bm = MQGP([mission.prior_samples; samples[1:i]], bounds)
-    outputCorMat(bm)[2,1]
+    quantityCorMat(bm)[2,1]
 end
 
 name = name_run50
@@ -443,7 +443,7 @@ mission = data["mission"]
 samples = data["samples"]
 cors50 = map(1:mission.num_samples) do i
     bm = MQGP([mission.prior_samples; samples[1:i]], bounds)
-    outputCorMat(bm)[2,1]
+    quantityCorMat(bm)[2,1]
 end
 
 name = names[6]
@@ -452,7 +452,7 @@ data = load(file_name)
 mission_grid = data["mission"]
 samples = data["samples"]
 bm = MQGP([mission.prior_samples; samples], bounds)
-comp_cor = outputCorMat(bm)[2,1]
+comp_cor = quantityCorMat(bm)[2,1]
 
 p = plot(
     cors15,
@@ -514,7 +514,7 @@ beliefs[2]
 mission.prior_samples
 
 vis(beliefs[2], [], mission.occupancy; quantity=1)
-outputCorMat(beliefs[2])
+quantityCorMat(beliefs[2])
 
 #* re-run with randomized and negative initial hyperparameters
 
@@ -532,7 +532,7 @@ new_beliefs = map(1:mission.num_samples) do i
     bm = MQGP([mission.prior_samples; samples[1:i]], bounds; σn=1)
     vis(bm, samples[1:i], mission.occupancy)
     @debug bm.θ.σ
-    @debug outputCorMat(bm)
+    @debug quantityCorMat(bm)
     sleep(1)
     bm
 end
@@ -541,7 +541,7 @@ beliefModel = MQGP([mission.prior_samples[[1,end]]; samples[1:2]], bounds)
 
 vis(beliefModel, samples[1:2], mission.occupancy)
 
-outputCorMat(beliefModel)
+quantityCorMat(beliefModel)
 
 T = floor(Int, sqrt(length(a)*2)) # (T+1)*T/2 in matrix
 
@@ -560,7 +560,7 @@ cor_mat = @. cov_mat / √(vars * vars') # broadcast shorthand
 using LinearAlgebra: diag
 using AbstractGPs: logpdf
 
-function outputCorMatVec(a)
+function quantityCorMatVec(a)
     cov_mat = fullyConnectedCovMat(a)
     vars = diag(cov_mat)
     return @. cov_mat / √(vars * vars') # broadcast shorthand
@@ -577,7 +577,7 @@ kernel = multiKernel
 θ = (σ = [55.82592833071618, 32.44570139050765, 6.617717042512063],
      ℓ = -3.963171016628482,
      σn = 1.2337243317000441)
-outputCorMatVec(θ.σ)
+quantityCorMatVec(θ.σ)
 fx = MultiQuantityGPs.buildPriorGP(X, Y_errs, kernel, θ)
 -logpdf(fx, Y_vals)
 
@@ -585,7 +585,7 @@ fx = MultiQuantityGPs.buildPriorGP(X, Y_errs, kernel, θ)
 θ = (σ = [55.82592833071618, -32.44570139050765, 6.617717042512063],
      ℓ = -3.963171016628482,
      σn = 1.2337243317000441)
-outputCorMatVec(θ.σ)
+quantityCorMatVec(θ.σ)
 fx = MultiQuantityGPs.buildPriorGP(X, Y_errs, kernel, θ)
 -logpdf(fx, Y_vals)
 # unexpectedly, positively-correlated hyperparameters have greater marginal likelihood
@@ -612,7 +612,7 @@ cor(getfield.(samples, :y), elev_vals)
 bm = MQGP([mission.prior_samples; samples], bounds)
 vis(bm, samples, mission.occupancy)
 bm
-outputCorMat(bm)
+quantityCorMat(bm)
 
 belief_vals = bm(tuple.(first.(getfield.(mission.prior_samples, :x)), 1))[1]
 
@@ -625,10 +625,10 @@ cor(belief_vals, getfield.(mission.prior_samples, :y))
 elev_samples = Sample.(tuple.(first.(getfield.(samples, :x)), 2), elev_vals)
 
 bm1 = MQGP([elev_samples; samples], bounds)
-outputCorMat(bm1)
+quantityCorMat(bm1)
 
 bm2 = MQGP([mission.prior_samples; samples], bounds)
-outputCorMat(bm2)
+quantityCorMat(bm2)
 
 # and with only two samples each
 
@@ -639,10 +639,10 @@ plot(
 ) |> display
 
 bm1 = MQGP([elev_samples[1:2]; samples[1:2]], bounds)
-outputCorMat(bm1)
+quantityCorMat(bm1)
 
 bm2 = MQGP([mission.prior_samples[[1,end]]; samples[1:2]], bounds)
-outputCorMat(bm2)
+quantityCorMat(bm2)
 
 plot(
     visualize(bm1, samples[1:2], mission.occupancy; quantity=1),
@@ -668,7 +668,7 @@ mean(s.y for s in samples), mean(pred)
 
 # saveBeliefMapToPng(bm, Map(zeros(200, 200), bounds), "food_for_munch")
 
-outputCorMat(bm)
+quantityCorMat(bm)
 
 @info "start"
 new_beliefs = map(1:mission.num_samples) do i
@@ -682,7 +682,7 @@ new_beliefs = map(1:mission.num_samples) do i
     # m = MultiQuantityGPs.multiMeanAve(X, Y)
     # @info "calculated means" m.f.(tuple.(0, 1:2))
     # @info "learned means" bm.θ.β
-    @info "matrix" outputCorMat(bm)
+    @info "matrix" quantityCorMat(bm)
     sleep(0.5)
     bm
 end
@@ -695,7 +695,7 @@ m.f.(tuple.(0, 1:2))
 
 plot()
 
-plot(getindex.(outputCorMat.(new_beliefs), 2), ylim=(-1.05,1.05))|>display
+plot(getindex.(quantityCorMat.(new_beliefs), 2), ylim=(-1.05,1.05))|>display
 
 plot([abs(bm.θ.ℓ) for bm in new_beliefs])|>display
 
@@ -740,7 +740,7 @@ end
 
 [abs(bm.θ.ℓ) for bm in new_beliefs]
 
-plot(getindex.(outputCorMat.(new_beliefs), 2), ylim=(-1.05,1.05))|>display
+plot(getindex.(quantityCorMat.(new_beliefs), 2), ylim=(-1.05,1.05))|>display
 
 #* Uncertainty over time
 

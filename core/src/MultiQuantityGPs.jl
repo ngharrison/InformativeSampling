@@ -23,15 +23,15 @@ using ..Kernels: multiMean, singleKernel, multiKernel, fullyConnectedCovNum,
                  initHyperparams, mtoKernel
 using ..Maps: Bounds
 
-export MQGP, outputCovMat, outputCorMat, meanDerivAndVar, fullCov
+export MQGP, quantityCovMat, quantityCorMat, meanDerivAndVar, fullCov
 
 """
 $(TYPEDEF)
 
-Belief model struct and function for multiple outputs with 2D inputs.
+Belief model struct and function for multiple quantities with 2D inputs.
 
-Designed on top of a Multi-output Gaussian Process, but can still be used with a
-single output.
+Designed on top of a Multi-Quantity Gaussian Process, but can still be used with
+a single quantity.
 
 Its interface:
 `X -> μ, σ` (SampleInputs -> means, standard deviations)
@@ -39,7 +39,7 @@ Its interface:
 struct MQGP{T}
     "posterior Gaussian Process used to do inference"
     gp
-    "number of outputs of the GP"
+    "number of quantities of the GP"
     N
     "kernel function used in the GP"
     kernel::T
@@ -57,8 +57,8 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Creates and returns a MQGP with hyperparameters trained and conditioned
-on the samples given. Lower and upper bounds are used to initialize one of the
+Creates and returns a MQGP with hyperparameters trained and conditioned on the
+samples given. Lower and upper bounds are used to initialize one of the
 hyperparameters.
 
 A noise standard deviation can optionally be passed in either as a single scalar
@@ -281,27 +281,27 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Gives the covariance matrix between all outputs from the hyperparameters.
+Gives the covariance matrix between all quantities from the hyperparameters.
 """
-function outputCovMat(bm::MQGP{typeof(multiKernel)})
+function quantityCovMat(bm::MQGP{typeof(multiKernel)})
     σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
     return fullyConnectedCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
 end
 
-function outputCovMat(bm::MQGP{typeof(mtoKernel)})
+function quantityCovMat(bm::MQGP{typeof(mtoKernel)})
     σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
     return manyToOneCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
 end
 
 """
 ```julia
-outputCorMat(beliefModel::MQGP)
+quantityCorMat(beliefModel::MQGP)
 ```
 
-Gives the correlation matrix between all outputs from the hyperparameters.
+Gives the correlation matrix between all quantities from the hyperparameters.
 """
-function outputCorMat(bm::MQGP)
-    cov_mat = outputCovMat(bm)
+function quantityCorMat(bm::MQGP)
+    cov_mat = quantityCovMat(bm)
     vars = diag(cov_mat)
     R = @. cov_mat / √(vars * vars') # broadcast shorthand
     idxs = isnan.(bm.θ.μ)

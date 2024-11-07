@@ -248,7 +248,7 @@ for options in runs
 # set the logging level: Info or Debug
 global_logger(ConsoleLogger(stderr, Info))
 
-using .MultiQuantityGPs: outputCorMat
+using .MultiQuantityGPs: quantityCorMat
 
 using .Metrics: calcMetrics
 using .DataIO: save
@@ -285,7 +285,7 @@ all_metrics = Array{Any}(undef, 2)
 
     ## run search alg
     @time samples, beliefs, cors, times = mission(sleep_time=0.0);
-    @debug "output correlation matrix:" outputCorMat(beliefs[end])
+    @debug "output correlation matrix:" quantityCorMat(beliefs[end])
     # save(mission, samples, beliefs; animation=true)
 
     ## calculate errors

@@ -283,16 +283,27 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Gives the covariance matrix between all quantities from the hyperparameters.
+Gives the covariance matrix between all latent functions from the
+hyperparameters.
 """
-function quantityCovMat(bm::MQGP{typeof(multiKernel)})
-    σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
-    return fullyConnectedCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
+function latentCovMat(bm::MQGP{typeof(multiKernel)})
+    return fullyConnectedCovMat(bm.θ.σ)
 end
 
-function quantityCovMat(bm::MQGP{typeof(mtoKernel)})
+function latentCovMat(bm::MQGP{typeof(mtoKernel)})
+    return manyToOneCovMat(bm.θ.σ)
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Gives the covariance matrix between all quantities from the hyperparameters.
+The model of the quantities is the latent functions plus their measurement
+noise.
+"""
+function quantityCovMat(bm::MQGP)
     σn = bm.θ.σn isa AbstractArray ? bm.θ.σn : fill(bm.θ.σn, bm.N)
-    return manyToOneCovMat(bm.θ.σ) .+ Diagonal(σn.^2)
+    return latentCovMat(bm) .+ Diagonal(σn.^2)
 end
 
 """

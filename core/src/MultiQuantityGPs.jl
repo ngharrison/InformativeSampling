@@ -25,6 +25,8 @@ using ..Maps: Bounds
 
 export MQGP, quantityCovMat, quantityCorMat, meanDerivAndVar, fullCov
 
+include("LinearModels.jl")
+
 """
 $(TYPEDEF)
 
@@ -308,6 +310,10 @@ function quantityCorMat(bm::MQGP)
     R[idxs,:] .= NaN
     R[:,idxs] .= NaN
     return R
+end
+
+function LinearModel(mqgp::MQGP, Y, X)
+    LinearModel(mqgp.θ.μ, quantityCovMat(mqgp), Y, X)
 end
 
 end

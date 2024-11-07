@@ -3,50 +3,16 @@ using InformativeSampling
 
 using .Maps: res, generateAxes
 using .Missions: Mission
-using .MultiQuantityGPs: MQGP, quantityCovMat
+using .MultiQuantityGPs: MQGP, quantityCovMat, LinearModel, rSquared
 using .Samples: Sample
 
 using InformativeSamplingUtils
 using .DataIO: output_dir, output_ext
 
-using LinearAlgebra: tr, diag, Diagonal
 using Statistics: mean, std
 using StatsBase: mean_and_cov, AnalyticWeights
 using FileIO: load
 using Plots
-
-const CI = CartesianIndex
-
-struct LinearModel
-    a
-    b
-end
-
-"""
-Returns a linear model of set of variables Y conditioned on set X.
-Requires full mean vector and covariance matrix of the joint normal
-distribution.
-"""
-function LinearModel(μ, Σ, Y, X)
-    b = Σ[X,X]\Σ[X,Y] # slope
-    a = μ[Y] - b'*μ[X] # intercept
-    return LinearModel(a,b)
-end
-
-(lm::LinearModel)(x) = lm.a .+ lm.b'*x
-
-rSquared(Σ, Y, X) = tr(Σ[X,Y]'*(Σ[X,X]\Σ[X,Y]))/tr(Σ[Y,Y])
-
-# # three ways:
-# vars = vars = diag(Σ)
-# R = @. Σ / √(vars * vars')
-# c = R[X,Y]
-# c'*(R[X,X]\c)
-#
-# Σ_cond = Σ[Y,Y] - Σ[X,Y]'*(Σ[X,X]\Σ[X,Y])
-# 1 - tr(Σ_cond)/tr(Σ[Y,Y])
-#
-# tr(Σ[X,Y]'*(Σ[X,X]\Σ[X,Y]))/tr(Σ[Y,Y])
 
 
 #* load mission
@@ -104,7 +70,7 @@ plot([x->f(x) for f in fs2], 0, 1;
      title="Modeling Vegetation from Others",
      xlabel="Other Quantity",
      ylabel="Vegetation",
-     labels=["Vegetation" "Elevation" "Ground Temperature" "Rainfall"])
+     labels=["Vegetation" "Elevation" "Ground Temperature" "Rainfall"])|>display
 
 savefig(output_dir * "linear_models/from_samples_and_kernel.svg")
 

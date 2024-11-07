@@ -1,14 +1,8 @@
 #+title: Informative Sampling
 
-A repository for robotic exploration in natural environments.
+This code was written as part of my PhD research in field robotics, specifically for robotic informative sampling in natural environments. The code is written in Julia for speed and code flexibility.
 
-Main focus on robotic information gathering on a 2D surface.
-
-This code was written for PhD research in field robotics.
-
-Written in Julia for speed and code flexibility.
-
-Created by Nicholas Harrison.
+The purpose of this repository is mainly to serve as a reference implementation for the methods in my thesis (link will be included once published). However, the code is organized and documented to be usable by others for their own applications. If you have questions about the code or problems trying to use it, feel free to post in the Discussions or Issues, and I'll see how I can help. Also important to know, I am currently in the process of improving the organization, so things are not guaranteed to be very stable just yet.
 
 See a video of an example run [[file:docs/res/ICRA_2024_run.mp4][here]].
 
@@ -146,6 +140,8 @@ python app/missions/from_python.py
 Note that just the same as when running Julia code normally, if the interpreter process ends, all compilation will disappear. That means running scripts straight from the command line has to pay the start-up cost every time. If instead the code is run from within a python shell, it will keep compiled methods around and subsequent runs will go much faster.
 
 * Documentation
+
+The docs can be viewed at https://ngharrison.github.io/InformativeSampling.
 
 If you want to view the docs locally, first generate them by running the following command(s) from the project root:
 

@@ -2,3 +2,7 @@
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 InformativeSampling = "bfd01cc8-db36-4de5-b056-8ab04eef9441"
 InformativeSamplingUtils = "1d6b69be-e25c-46ac-b1c5-442f720809e4"
+
+[compat]
+julia = "1.10"
+Documenter = "1.5"

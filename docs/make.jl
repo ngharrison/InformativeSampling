@@ -7,8 +7,8 @@ using InformativeSampling: Maps, Missions, BeliefModels, Kernels,
 using InformativeSamplingUtils: DataIO, Visualization, Metrics
 
 makedocs(
-    sitename="InformativeSampling.jl",
-    remotes=nothing,
+    sitename="InformativeSampling",
+    # remotes=nothing,
     pages = [
         "index.md",
         "application.md",
@@ -18,4 +18,9 @@ makedocs(
         "julia_tips.md",
     ],
     format = Documenter.HTML(prettyurls=false)
+)
+
+deploydocs(
+    repo = "github.com/ngharrison/InformativeSampling.git",
+    versions = nothing,
 )

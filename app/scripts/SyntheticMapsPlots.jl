@@ -23,7 +23,7 @@ occupancy = Map(zeros(Bool, 100, 100), bounds)
 
 #* initialize ground truth
 
-# simulated
+# synthetic
 peaks = [Peak(rand(2).*(bounds.upper-bounds.lower) .+ bounds.lower, 0.02*(rand()+0.5)*I, rand())
          for i in 1:num_peaks]
 ggt = GaussGroundTruth(peaks)

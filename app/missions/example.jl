@@ -13,7 +13,7 @@ using InformativeSamplingUtils
 using .DataIO: GaussGroundTruth, Peak
 using .Visualization: vis
 
-function simMission(; seed_val=0, num_samples=30, num_peaks=3, priors=Bool[1,1,1])
+function synMission(; seed_val=0, num_samples=30, num_peaks=3, priors=Bool[1,1,1])
     seed!(seed_val) # make random values deterministic
 
     bounds = (lower = [0.0, 0.0], upper = [1.0, 1.0])
@@ -22,7 +22,7 @@ function simMission(; seed_val=0, num_samples=30, num_peaks=3, priors=Bool[1,1,1
 
     ## initialize ground truth
 
-    # simulated
+    # synthetic
     peaks = map(1:num_peaks) do _
         μ = rand(2).*(bounds.upper-bounds.lower) .+ bounds.lower
         Σ = 0.02*(rand()+0.5)*mean(bounds.upper-bounds.lower)^2*I
@@ -108,7 +108,7 @@ end
 #* Run
 
 ## initialize data for mission
-mission, prior_maps = simMission(num_samples=5)
+mission, prior_maps = synMission(num_samples=5)
 
 vis(mission.sampler..., prior_maps...;
     titles=["QOI", "Scaling Factor", "Additive Noise", "Random Map"],

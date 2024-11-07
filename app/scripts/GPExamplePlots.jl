@@ -22,7 +22,7 @@ end
 #* data
 
 # This is old code and would need to be re-written
-mission, = simMission(; seed_val=3, num_peaks=4, priors=collect(Bool, (0,0,0)))
+mission, = synMission(; seed_val=3, num_peaks=4, priors=collect(Bool, (0,0,0)))
 
 @time samples, beliefs = mission(sleep_time=0.0);
 

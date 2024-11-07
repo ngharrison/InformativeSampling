@@ -18,7 +18,7 @@ using InformativeSamplingUtils
 using .DataIO: GaussGroundTruth, Peak
 using .Visualization: vis
 
-function simMission(; seed_val=0, num_samples=30,
+function synMission(; seed_val=0, num_samples=30,
                     num_peaks=3, priors=Bool[1, 1, 1],
                     sampleCostType=DistScaledEIGF, kernel=multiKernel,
                     use_means=true, noise_learned=true, use_cond_pdf=false,
@@ -32,7 +32,7 @@ function simMission(; seed_val=0, num_samples=30,
 
     ## initialize ground truth
 
-    # simulated
+    # synthetic
     peaks = map(1:num_peaks) do _
         μ = rand(2).*(bounds.upper-bounds.lower) .+ bounds.lower
         Σ = 0.02*(rand()+0.5)*mean(bounds.upper-bounds.lower)^2*I
@@ -145,7 +145,7 @@ end
 # )
 #
 # ## initialize data for mission
-# mission, prior_maps = simMission(; num_samples=30, priors=Bool[1,1,1], seed_val=0, options...)
+# mission, prior_maps = synMission(; num_samples=30, priors=Bool[1,1,1], seed_val=0, options...)
 #
 # vis(mission.sampler..., prior_maps...;
 #     titles=["QOI", "Scaling Factor", "Additive Noise", "Random Map"],
@@ -162,7 +162,7 @@ end
 
 #* Compilation run
 global_logger(ConsoleLogger(stderr, Info))
-mission, = simMission(num_samples=4, priors=Bool[0,0,0])
+mission, = synMission(num_samples=4, priors=Bool[0,0,0])
 mission();
 
 #* Runs
@@ -312,7 +312,7 @@ h = (options.use_hyp_drop ? "hypdrop" : "nodrop")
 s = options.sampleCostType
 
 dir = "new_syn/syn_$(k)_$(m)_$(n)_$(c)_$(h)_$(s)"
-mission, _ = simMission(; options...)
+mission, _ = synMission(; options...)
 save(; file_name="$(dir)/mission", mission)
 
 mission_peaks = [3,3,4,4,5,5]
@@ -323,7 +323,7 @@ metrics = Array{Any, 2}(undef, (length(mission_peaks), num_runs))
 @time for priors in Iterators.product(fill(0:1,3)...)
     for (i, num_peaks) in enumerate(mission_peaks)
         ## initialize data for mission
-        mission, _ = simMission(; seed_val=i, num_peaks, priors=collect(Bool, priors), options...)
+        mission, _ = synMission(; seed_val=i, num_peaks, priors=collect(Bool, priors), options...)
         for j in 1:num_runs
             println()
             println("Priors ", priors)

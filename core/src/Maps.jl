@@ -1,5 +1,5 @@
 """
-This module contains types for holding and handling real and simulated data.
+This module contains types for holding and handling real and synthetic data.
 Mainly used by, but foundational for the other parts too.
 
 Main public types and functions:
